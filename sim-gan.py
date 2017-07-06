@@ -247,4 +247,126 @@ try:
 except ImportError:
     pass
 
+# Losses
+
+#
+# define custom l1 loss function for the refiner
+#
+
+def self_regularization_loss(y_true, y_pred):
+    delta = 0.0001  # FIXME: need to figure out an appropriate value for this
+    return tf.multiply(delta, tf.reduce_sum(tf.abs(y_pred - y_true)))
+
+#
+# define custom local adversarial loss (softmax for each image section) for the discriminator
+# the adversarial loss function is the sum of the cross-entropy losses over the local patches
+#
+
+def local_adversarial_loss(y_true, y_pred):
+    # y_true and y_pred have shape (batch_size, # of local patches, 2), but really we just want to average over
+    # the local patches and batch size so we can reshape to (batch_size * # of local patches, 2)
+    y_true = tf.reshape(y_true, (-1, 2))
+    y_pred = tf.reshape(y_pred, (-1, 2))
+    loss = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+
+    return tf.reduce_mean(loss)
+
+# Compile the model
+sgd = optimizers.SGD(lr=1e-3)
+
+refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
+discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
+discriminator_model.trainable = False
+combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
+
+refiner_model_path = None
+discriminator_model_path = None
+
+# Set up the pipeline to feed new images to both models
+datagen = image.ImageDataGenerator(
+    preprocessing_function=applications.xception.preprocess_input,
+    data_format='channels_last')
+
+flow_from_directory_params = {'target_size': (img_height, img_width),
+                              'color_mode': 'grayscale' if img_channels == 1 else 'rgb',
+                              'class_mode': None,
+                              'batch_size': batch_size}
+flow_params = {'batch_size': batch_size}
+
+synthetic_generator = datagen.flow(
+    x = syn_image_stack,
+    **flow_params
+)
+
+real_generator = datagen.flow(
+    x = real_image_stack,
+    **flow_params
+)
+
+def get_image_batch(generator):
+    """keras generators may generate an incomplete batch for the last batch"""
+    img_batch = generator.next()
+    if len(img_batch) != batch_size:
+        img_batch = generator.next()
+
+    assert len(img_batch) == batch_size
+
+    return img_batch
+
+# the target labels for the cross-entropy loss layer are 0 for every yj (real) and 1 for every xi (refined)
+y_real = np.array([[[1.0, 0.0]] * discriminator_model_output_shape[1]] * batch_size)
+y_refined = np.array([[[0.0, 1.0]] * discriminator_model_output_shape[1]] * batch_size)
+assert y_real.shape == (batch_size, discriminator_model_output_shape[1], 2)
+batch_out = get_image_batch(synthetic_generator)
+assert batch_out.shape == (batch_size, img_height, img_width, img_channels), \
+    "Image Dimensions do not match, {}!={}".format(batch_out.shape, (batch_size, img_height, img_width, img_channels))
+
+# Pretraining
+if not refiner_model_path:
+    # we first train the R network with just self-regularization loss for 1,000 steps
+    print('pre-training the refiner network...')
+    gen_loss = np.zeros(shape=len(refiner_model.metrics_names))
+
+    for i in range(pre_steps):
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+        gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
+
+        # log every `log_interval` steps
+        if not i % log_interval:
+            figure_name = 'refined_image_batch_pre_train_step_{}.png'.format(i)
+            print('Saving batch of refined images during pre-training at step: {}.'.format(i))
+
+            synthetic_image_batch = get_image_batch(synthetic_generator)
+            plot_batch(
+                np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
+                os.path.join(cache_dir, figure_name),
+                label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
+
+            print('Refiner model self regularization loss: {}.'.format(gen_loss / log_interval))
+            gen_loss = np.zeros(shape=len(refiner_model.metrics_names))
+
+    refiner_model.save(os.path.join(cache_dir, 'refiner_model_pre_trained.h5'))
+else:
+    refiner_model.load_weights(refiner_model_path)
+
+if not discriminator_model_path:
+    # and D for 200 steps (one mini-batch for refined images, another for real)
+    print('pre-training the discriminator network...')
+    disc_loss = np.zeros(shape=len(discriminator_model.metrics_names))
+
+    for _ in range(pre_steps):
+        real_image_batch = get_image_batch(real_generator)
+        disc_loss = np.add(discriminator_model.train_on_batch(real_image_batch, y_real), disc_loss)
+
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+        refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
+        disc_loss = np.add(discriminator_model.train_on_batch(refined_image_batch, y_refined), disc_loss)
+
+    discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
+
+    # hard-coded for now
+    print('Discriminator model loss: {}.'.format(disc_loss / (100 * 2)))
+else:
+    discriminator_model.load_weights(discriminator_model_path)
+
 import ipdb; ipdb.set_trace()
