@@ -226,7 +226,7 @@ print(refiner_model.summary())
 print(discriminator_model.summary())
 print(combined_model.summary())
 
-from keras.utils.vis_utils import model_to_dot
+from keras.utils.visualize_util import model_to_dot
 from IPython.display import SVG
 # Define model
 try:
