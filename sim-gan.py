@@ -294,12 +294,12 @@ flow_from_directory_params = {'target_size': (img_height, img_width),
 flow_params = {'batch_size': batch_size}
 
 synthetic_generator = datagen.flow(
-    x = syn_image_stack,
+    X = syn_image_stack,
     **flow_params
 )
 
 real_generator = datagen.flow(
-    x = real_image_stack,
+    X = real_image_stack,
     **flow_params
 )
 
