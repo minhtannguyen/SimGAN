@@ -285,7 +285,7 @@ discriminator_model_path = None
 # Set up the pipeline to feed new images to both models
 datagen = image.ImageDataGenerator(
     preprocessing_function=applications.xception.preprocess_input,
-    data_format='channels_last')
+    dim_ordering='tf')
 
 flow_from_directory_params = {'target_size': (img_height, img_width),
                               'color_mode': 'grayscale' if img_channels == 1 else 'rgb',
