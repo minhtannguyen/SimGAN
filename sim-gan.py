@@ -56,6 +56,7 @@ k_g = 2  # number of generative network updates per step
 log_interval = 100
 pre_steps = 15 # for pretraining
 
+# Utils functions
 """
 Module to plot a batch of images along w/ their corresponding label(s)/annotations and save the plot to disc.
 
@@ -142,6 +143,8 @@ class ImageHistoryBuffer(object):
         except IndexError:
             return np.zeros(shape=0)
 
+
+# Network architectures
 def refiner_network(input_image_tensor):
     """
     The refiner network, R, is a residual network (ResNet). It modifies the synthetic image on a pixel level, rather
@@ -196,6 +199,7 @@ def discriminator_network(input_image_tensor):
     # and the custom loss function is then `tf.nn.sparse_softmax_cross_entropy_with_logits`
     return layers.Reshape((-1, 2))(x)
 
+# Combining models
 #
 # define model input and output tensors
 #
@@ -226,6 +230,7 @@ print(refiner_model.summary())
 print(discriminator_model.summary())
 print(combined_model.summary())
 
+# Visualization
 from keras.utils.visualize_util import model_to_dot
 from IPython.display import SVG
 # Define model
@@ -234,6 +239,12 @@ try:
     SVG('refiner_model.svg')
 except ImportError:
     print('Not running the patched version of keras/pydot!')
+    pass
+
+try:
+    model_to_dot(discriminator_model, show_shapes=True).write_svg('discriminator_model.svg')
+    SVG('discriminator_model.svg')
+except ImportError:
     pass
 
 import ipdb; ipdb.set_trace()
