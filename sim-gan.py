@@ -55,3 +55,5 @@ k_d = 1  # number of discriminator updates per step
 k_g = 2  # number of generative network updates per step
 log_interval = 100
 pre_steps = 15 # for pretraining
+
+import ipdb; ipdb.set_trace()
