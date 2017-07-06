@@ -226,4 +226,14 @@ print(refiner_model.summary())
 print(discriminator_model.summary())
 print(combined_model.summary())
 
+from keras.utils.vis_utils import model_to_dot
+from IPython.display import SVG
+# Define model
+try:
+    model_to_dot(refiner_model, show_shapes=True).write_svg('refiner_model.svg')
+    SVG('refiner_model.svg')
+except ImportError:
+    print('Not running the patched version of keras/pydot!')
+    pass
+
 import ipdb; ipdb.set_trace()
