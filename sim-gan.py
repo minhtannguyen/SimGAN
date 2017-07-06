@@ -369,4 +369,68 @@ if not discriminator_model_path:
 else:
     discriminator_model.load_weights(discriminator_model_path)
 
-import ipdb; ipdb.set_trace()
+# Full training
+# TODO: what is an appropriate size for the image history buffer?
+image_history_buffer = ImageHistoryBuffer((0, img_height, img_width, img_channels), batch_size * 100, batch_size)
+
+combined_loss = np.zeros(shape=len(combined_model.metrics_names))
+disc_loss_real = np.zeros(shape=len(discriminator_model.metrics_names))
+disc_loss_refined = np.zeros(shape=len(discriminator_model.metrics_names))
+
+# see Algorithm 1 in https://arxiv.org/pdf/1612.07828v1.pdf
+for i in range(nb_steps):
+    print('Step: {} of {}.'.format(i, nb_steps))
+
+    # train the refiner
+    for _ in range(k_g * 2):
+        # sample a mini-batch of synthetic images
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+
+        # update by taking an SGD step on mini-batch loss LR
+        combined_loss = np.add(combined_model.train_on_batch(synthetic_image_batch,
+                                                             [synthetic_image_batch, y_real]), combined_loss)
+
+    for _ in range(k_d):
+        # sample a mini-batch of synthetic and real images
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+        real_image_batch = get_image_batch(real_generator)
+
+        # refine the synthetic images w/ the current refiner
+        refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
+
+        # use a history of refined images
+        half_batch_from_image_history = image_history_buffer.get_from_image_history_buffer()
+        image_history_buffer.add_to_image_history_buffer(refined_image_batch)
+
+        if len(half_batch_from_image_history):
+            refined_image_batch[:batch_size // 2] = half_batch_from_image_history
+
+        # update by taking an SGD step on mini-batch loss LD
+        disc_loss_real = np.add(discriminator_model.train_on_batch(real_image_batch, y_real), disc_loss_real)
+        disc_loss_refined = np.add(discriminator_model.train_on_batch(refined_image_batch, y_refined),
+                                   disc_loss_refined)
+
+    if not i % log_interval:
+        # plot batch of refined images w/ current refiner
+        figure_name = 'refined_image_batch_step_{}.png'.format(i)
+        print('Saving batch of refined images at adversarial step: {}.'.format(i))
+
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+        plot_batch(
+            np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
+            os.path.join(cache_dir, figure_name),
+            label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
+
+        # log loss summary
+        print('Refiner model loss: {}.'.format(combined_loss / (log_interval * k_g * 2)))
+        print('Discriminator model loss real: {}.'.format(disc_loss_real / (log_interval * k_d * 2)))
+        print('Discriminator model loss refined: {}.'.format(disc_loss_refined / (log_interval * k_d * 2)))
+
+        combined_loss = np.zeros(shape=len(combined_model.metrics_names))
+        disc_loss_real = np.zeros(shape=len(discriminator_model.metrics_names))
+        disc_loss_refined = np.zeros(shape=len(discriminator_model.metrics_names))
+
+        # save model checkpoints
+        model_checkpoint_base_name = os.path.join(cache_dir, '{}_model_step_{}.h5')
+        refiner_model.save(model_checkpoint_base_name.format('refiner', i))
+        discriminator_model.save(model_checkpoint_base_name.format('discriminator', i))
