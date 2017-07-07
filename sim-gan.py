@@ -49,7 +49,7 @@ with h5py.File(os.path.join(data_dir,'real_gaze.h5'),'r') as t_file:
 # training params
 #
 
-nb_steps = 20 # originally 10000, but this makes the kernel time out
+nb_steps = 10000 # originally 10000, but this makes the kernel time out
 batch_size = 49
 k_d = 1  # number of discriminator updates per step
 k_g = 2  # number of generative network updates per step
