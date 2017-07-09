@@ -45,6 +45,8 @@ with h5py.File(os.path.join(data_dir,'real_gaze.h5'),'r') as t_file:
         img_channels = 1
     real_image_stack = np.stack([np.expand_dims(a,-1) for a in t_file['image'].values()],0)
 
+import ipdb; ipdb.set_trace()
+
 #
 # training params
 #
