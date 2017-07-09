@@ -74,6 +74,7 @@ from skimage.util.montage import montage2d
 
 
 def plot_batch(image_batch, figure_path, label_batch=None):
+    import ipdb; ipdb.set_trace()
     all_groups = {label: montage2d(np.stack([img[:, :, 0] for img, lab in img_lab_list], 0))
                   for label, img_lab_list in groupby(zip(image_batch, label_batch), lambda x: x[1])}
     fig, c_axs = plt.subplots(1, len(all_groups), figsize=(len(all_groups) * 4, 8), dpi=600)
