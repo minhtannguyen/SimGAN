@@ -282,7 +282,7 @@ combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adve
 refiner_model_path = None
 discriminator_model_path = None
 
-# Set up the pipeline to feed new images to both models
+# Set up the pipeline to feed new images to both models 
 datagen = image.ImageDataGenerator(
     preprocessing_function=applications.xception.preprocess_input,
     dim_ordering='tf')
