@@ -293,6 +293,7 @@ flow_from_directory_params = {'target_size': (img_height, img_width),
                               'batch_size': batch_size}
 flow_params = {'batch_size': batch_size}
 
+import ipdb; ipdb.set_trace()
 synthetic_generator = datagen.flow(
     X = syn_image_stack,
     **flow_params
@@ -337,7 +338,6 @@ if not refiner_model_path:
             print('Saving batch of refined images during pre-training at step: {}.'.format(i))
 
             synthetic_image_batch = get_image_batch(synthetic_generator)
-            import ipdb; ipdb.set_trace()
             plot_batch(
                 np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
                 os.path.join(cache_dir, figure_name),
