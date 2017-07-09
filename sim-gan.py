@@ -45,8 +45,6 @@ with h5py.File(os.path.join(data_dir,'real_gaze.h5'),'r') as t_file:
         img_channels = 1
     real_image_stack = np.stack([np.expand_dims(a,-1) for a in t_file['image'].values()],0)
 
-import ipdb; ipdb.set_trace()
-
 #
 # training params
 #
@@ -76,7 +74,6 @@ from skimage.util.montage import montage2d
 
 
 def plot_batch(image_batch, figure_path, label_batch=None):
-    import ipdb; ipdb.set_trace()
     all_groups = {label: montage2d(np.stack([img[:, :, 0] for img, lab in img_lab_list], 0))
                   for label, img_lab_list in groupby(zip(image_batch, label_batch), lambda x: x[1])}
     fig, c_axs = plt.subplots(1, len(all_groups), figsize=(len(all_groups) * 4, 8), dpi=600)
@@ -340,6 +337,7 @@ if not refiner_model_path:
             print('Saving batch of refined images during pre-training at step: {}.'.format(i))
 
             synthetic_image_batch = get_image_batch(synthetic_generator)
+            import ipdb; ipdb.set_trace()
             plot_batch(
                 np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
                 os.path.join(cache_dir, figure_name),
