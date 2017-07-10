@@ -342,6 +342,12 @@ if not refiner_model_path:
                 os.path.join(cache_dir, figure_name),
                 label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
+            real_image_batch = get_image_batch(real_generator)
+            plot_batch(
+                np.concatenate((synthetic_image_batch, real_image_batch)),
+                os.path.join(cache_dir, figure_name),
+                label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
+
     refiner_model.save(os.path.join(cache_dir, 'refiner_model_pre_trained.h5'))
     print('Refiner model self regularization loss: {}.'.format(gen_loss / pre_steps))
 else:
@@ -415,6 +421,12 @@ for i in range(nb_steps):
             np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
             os.path.join(cache_dir, figure_name),
             label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
+
+        real_image_batch = get_image_batch(real_generator)
+        plot_batch(
+            np.concatenate((synthetic_image_batch, real_image_batch)),
+            os.path.join(cache_dir, figure_name),
+            label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
 
         # log loss summary
         print('Refiner model loss: {}.'.format(combined_loss / (log_interval * k_g * 2)))
