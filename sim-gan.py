@@ -345,7 +345,7 @@ if not refiner_model_path:
             real_image_batch = get_image_batch(real_generator)
             plot_batch(
                 np.concatenate((synthetic_image_batch, real_image_batch)),
-                os.path.join(cache_dir, figure_name),
+                os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
                 label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
 
     refiner_model.save(os.path.join(cache_dir, 'refiner_model_pre_trained.h5'))
@@ -425,7 +425,7 @@ for i in range(nb_steps):
         real_image_batch = get_image_batch(real_generator)
         plot_batch(
             np.concatenate((synthetic_image_batch, real_image_batch)),
-            os.path.join(cache_dir, figure_name),
+            os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
             label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
 
         # log loss summary
