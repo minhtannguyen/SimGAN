@@ -395,7 +395,7 @@ for i in range(nb_steps):
         synthetic_image_batch = get_image_batch(synthetic_generator)
         real_image_batch = get_image_batch(real_generator)
 
-        # refine the synthetic images w/ the current refiner
+        # refine the synthetic images w/ the current refiner 
         refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
 
         # use a history of refined images
