@@ -303,8 +303,6 @@ real_generator = datagen.flow(
     **flow_params
 )
 
-import ipdb; ipdb.set_trace()
-
 def get_image_batch(generator):
     """keras generators may generate an incomplete batch for the last batch"""
     img_batch = generator.next()
