@@ -221,7 +221,7 @@ discriminator_model = models.Model(input=refined_or_real_image_tensor, output=di
 # combined must output the refined image along w/ the disc's classification of it for the refiner's self-reg loss
 refiner_model_output = refiner_model(synthetic_image_tensor)
 combined_output = discriminator_model(refiner_model_output)
-combined_model = models.Model(input=synthetic_image_tensor, output=combined_output,
+combined_model = models.Model(input=synthetic_image_tensor, output=[refiner_model_output, combined_output],
                               name='combined')
 
 discriminator_model_output_shape = discriminator_model.output_shape
@@ -277,7 +277,7 @@ sgd = optimizers.SGD(lr=1e-3)
 refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
 discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
 discriminator_model.trainable = False
-combined_model.compile(optimizer=sgd, loss=local_adversarial_loss)
+combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
 
 refiner_model_path = None
 discriminator_model_path = None
@@ -388,7 +388,8 @@ for i in range(nb_steps):
         synthetic_image_batch = get_image_batch(synthetic_generator)
 
         # update by taking an SGD step on mini-batch loss LR
-        combined_loss = np.add(combined_model.train_on_batch(synthetic_image_batch, y_real), combined_loss)
+        combined_loss = np.add(combined_model.train_on_batch(synthetic_image_batch,
+                                                             [synthetic_image_batch, y_real]), combined_loss)
 
     for _ in range(k_d):
         # sample a mini-batch of synthetic and real images
