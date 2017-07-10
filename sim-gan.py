@@ -283,8 +283,6 @@ refiner_model_path = None
 discriminator_model_path = None
 
 # Set up the pipeline to feed new images to both modelsqui
-import ipdb; ipdb.set_trace()
-
 datagen = image.ImageDataGenerator(
     preprocessing_function=applications.xception.preprocess_input,
     dim_ordering='tf')
@@ -304,6 +302,8 @@ real_generator = datagen.flow(
     X = real_image_stack,
     **flow_params
 )
+
+import ipdb; ipdb.set_trace()
 
 def get_image_batch(generator):
     """keras generators may generate an incomplete batch for the last batch"""
