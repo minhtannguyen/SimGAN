@@ -19,7 +19,7 @@ import tensorflow as tf
 
 print('tf-version',tf.__version__, 'keras-version', keras.__version__)
 
-data_dir = '/home/ubuntu/efs/eye-gaze'
+data_dir = '/home/ubuntu/data/eye-gaze'
 cache_dir = '.'
 
 # load the data file and extract dimensions
