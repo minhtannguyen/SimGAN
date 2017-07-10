@@ -221,7 +221,7 @@ discriminator_model = models.Model(input=refined_or_real_image_tensor, output=di
 # combined must output the refined image along w/ the disc's classification of it for the refiner's self-reg loss
 refiner_model_output = refiner_model(synthetic_image_tensor)
 combined_output = discriminator_model(refiner_model_output)
-combined_model = models.Model(input=synthetic_image_tensor, output=[refiner_model_output, combined_output],
+combined_model = models.Model(input=synthetic_image_tensor, output=combined_output,
                               name='combined')
 
 discriminator_model_output_shape = discriminator_model.output_shape
@@ -395,7 +395,7 @@ for i in range(nb_steps):
         synthetic_image_batch = get_image_batch(synthetic_generator)
         real_image_batch = get_image_batch(real_generator)
 
-        # refine the synthetic images w/ the current refiner 
+        # refine the synthetic images w/ the current refiner
         refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
 
         # use a history of refined images
