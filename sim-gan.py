@@ -254,7 +254,7 @@ except ImportError:
 #
 
 def self_regularization_loss(y_true, y_pred):
-    delta = 0.0000  # FIXME: need to figure out an appropriate value for this
+    delta = 0.0001  # FIXME: need to figure out an appropriate value for this
     return tf.multiply(delta, tf.reduce_sum(tf.abs(y_pred - y_true)))
 
 #
@@ -277,7 +277,7 @@ sgd = optimizers.SGD(lr=1e-3)
 refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
 discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
 discriminator_model.trainable = False
-combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
+combined_model.compile(optimizer=sgd, loss=local_adversarial_loss)
 
 refiner_model_path = None
 discriminator_model_path = None
@@ -388,8 +388,7 @@ for i in range(nb_steps):
         synthetic_image_batch = get_image_batch(synthetic_generator)
 
         # update by taking an SGD step on mini-batch loss LR
-        combined_loss = np.add(combined_model.train_on_batch(synthetic_image_batch,
-                                                             [synthetic_image_batch, y_real]), combined_loss)
+        combined_loss = np.add(combined_model.train_on_batch(synthetic_image_batch, y_real), combined_loss)
 
     for _ in range(k_d):
         # sample a mini-batch of synthetic and real images
