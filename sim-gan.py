@@ -74,6 +74,13 @@ from skimage.util.montage import montage2d
 
 
 def plot_batch(image_batch, figure_path, label_batch=None):
+    print('Statistics of Image Batch')
+    print('Mean_Syn = %f' %np.mean(image_batch[:49]))
+    print('Mean_ReSyn = %f' % np.mean(image_batch[49:]))
+    print('Min_Syn = %f' % np.min(image_batch[:49]))
+    print('Min_ReSyn = %f' % np.min(image_batch[49:]))
+    print('Max_Syn = %f' % np.max(image_batch[:49]))
+    print('Max_ReSyn = %f' % np.max(image_batch[49:]))
     all_groups = {label: montage2d(np.stack([img[:, :, 0] for img, lab in img_lab_list], 0))
                   for label, img_lab_list in groupby(zip(image_batch, label_batch), lambda x: x[1])}
     fig, c_axs = plt.subplots(1, len(all_groups), figsize=(len(all_groups) * 4, 8), dpi=600)
@@ -342,10 +349,8 @@ if not refiner_model_path:
                 os.path.join(cache_dir, figure_name),
                 label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
-            print('Refiner model self regularization loss: {}.'.format(gen_loss / log_interval))
-            gen_loss = np.zeros(shape=len(refiner_model.metrics_names))
-
     refiner_model.save(os.path.join(cache_dir, 'refiner_model_pre_trained.h5'))
+    print('Refiner model self regularization loss: {}.'.format(gen_loss / pre_steps))
 else:
     refiner_model.load_weights(refiner_model_path)
 
@@ -363,9 +368,7 @@ if not discriminator_model_path:
         disc_loss = np.add(discriminator_model.train_on_batch(refined_image_batch, y_refined), disc_loss)
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
-
-    # hard-coded for now
-    print('Discriminator model loss: {}.'.format(disc_loss / (100 * 2)))
+    print('Discriminator model loss: {}.'.format(disc_loss / (pre_steps * 2)))
 else:
     discriminator_model.load_weights(discriminator_model_path)
 
