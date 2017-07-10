@@ -74,13 +74,6 @@ from skimage.util.montage import montage2d
 
 
 def plot_batch(image_batch, figure_path, label_batch=None):
-    print('Statistics of Image Batch')
-    print('Mean_Syn = %f' %np.mean(image_batch[:49]))
-    print('Mean_ReSyn = %f' % np.mean(image_batch[49:]))
-    print('Min_Syn = %f' % np.min(image_batch[:49]))
-    print('Min_ReSyn = %f' % np.min(image_batch[49:]))
-    print('Max_Syn = %f' % np.max(image_batch[:49]))
-    print('Max_ReSyn = %f' % np.max(image_batch[49:]))
     all_groups = {label: montage2d(np.stack([img[:, :, 0] for img, lab in img_lab_list], 0))
                   for label, img_lab_list in groupby(zip(image_batch, label_batch), lambda x: x[1])}
     fig, c_axs = plt.subplots(1, len(all_groups), figsize=(len(all_groups) * 4, 8), dpi=600)
@@ -382,6 +375,7 @@ disc_loss_refined = np.zeros(shape=len(discriminator_model.metrics_names))
 
 # see Algorithm 1 in https://arxiv.org/pdf/1612.07828v1.pdf
 for i in range(nb_steps):
+    print('Step: {} of {}.'.format(i, nb_steps))
     # train the refiner
     for _ in range(k_g * 2):
         # sample a mini-batch of synthetic images
@@ -412,7 +406,6 @@ for i in range(nb_steps):
                                    disc_loss_refined)
 
     if not i % log_interval:
-        print('Step: {} of {}.'.format(i, nb_steps))
         # plot batch of refined images w/ current refiner
         figure_name = 'refined_image_batch_step_{}.png'.format(i)
         print('Saving batch of refined images at adversarial step: {}.'.format(i))
