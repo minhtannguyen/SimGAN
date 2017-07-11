@@ -295,6 +295,7 @@ flow_params = {'batch_size': batch_size}
 
 synthetic_generator = datagen.flow(
     X = syn_image_stack,
+    seed = 1,
     **flow_params
 )
 
