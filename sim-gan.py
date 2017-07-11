@@ -53,7 +53,7 @@ nb_steps = 10000 # originally 10000, but this makes the kernel time out
 batch_size = 49
 k_d = 1  # number of discriminator updates per step
 k_g = 2  # number of generative network updates per step
-log_interval = 1
+log_interval = 100
 pre_steps = 15 # for pretraining
 
 # Utils functions
@@ -221,32 +221,32 @@ discriminator_model = models.Model(input=refined_or_real_image_tensor, output=di
 
 # combined must output the refined image along w/ the disc's classification of it for the refiner's self-reg loss
 refiner_model_output = refiner_model(synthetic_image_tensor)
-# combined_output = discriminator_model(refiner_model_output)
-# combined_model = models.Model(input=synthetic_image_tensor, output=[refiner_model_output, combined_output],
-#                               name='combined')
-#
+combined_output = discriminator_model(refiner_model_output)
+combined_model = models.Model(input=synthetic_image_tensor, output=[refiner_model_output, combined_output],
+                              name='combined')
+
 discriminator_model_output_shape = discriminator_model.output_shape
-#
-# print(refiner_model.summary())
-# print(discriminator_model.summary())
-# print(combined_model.summary())
-#
-# # Visualization
-# from keras.utils.visualize_util import model_to_dot
-# from IPython.display import SVG
-# # Define model
-# try:
-#     model_to_dot(refiner_model, show_shapes=True).write_svg('refiner_model.svg')
-#     SVG('refiner_model.svg')
-# except ImportError:
-#     print('Not running the patched version of keras/pydot!')
-#     pass
-#
-# try:
-#     model_to_dot(discriminator_model, show_shapes=True).write_svg('discriminator_model.svg')
-#     SVG('discriminator_model.svg')
-# except ImportError:
-#     pass
+
+print(refiner_model.summary())
+print(discriminator_model.summary())
+print(combined_model.summary())
+
+# Visualization
+from keras.utils.visualize_util import model_to_dot
+from IPython.display import SVG
+# Define model
+try:
+    model_to_dot(refiner_model, show_shapes=True).write_svg('refiner_model.svg')
+    SVG('refiner_model.svg')
+except ImportError:
+    print('Not running the patched version of keras/pydot!')
+    pass
+
+try:
+    model_to_dot(discriminator_model, show_shapes=True).write_svg('discriminator_model.svg')
+    SVG('discriminator_model.svg')
+except ImportError:
+    pass
 
 # Losses
 
@@ -255,7 +255,7 @@ discriminator_model_output_shape = discriminator_model.output_shape
 #
 
 def self_regularization_loss(y_true, y_pred):
-    delta = 0.00001  # FIXME: need to figure out an appropriate value for this
+    delta = 0.0000  # FIXME: need to figure out an appropriate value for this
     return tf.multiply(delta, tf.reduce_sum(tf.abs(y_pred - y_true)))
 
 #
@@ -278,7 +278,7 @@ sgd = optimizers.SGD(lr=1e-3)
 refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
 discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
 discriminator_model.trainable = False
-# combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
+combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
 
 refiner_model_path = None
 discriminator_model_path = None
@@ -320,9 +320,9 @@ def get_image_batch(generator):
 y_real = np.array([[[1.0, 0.0]] * discriminator_model_output_shape[1]] * batch_size)
 y_refined = np.array([[[0.0, 1.0]] * discriminator_model_output_shape[1]] * batch_size)
 assert y_real.shape == (batch_size, discriminator_model_output_shape[1], 2)
-# batch_out = get_image_batch(synthetic_generator)
-# assert batch_out.shape == (batch_size, img_height, img_width, img_channels), \
-#     "Image Dimensions do not match, {}!={}".format(batch_out.shape, (batch_size, img_height, img_width, img_channels))
+batch_out = get_image_batch(synthetic_generator)
+assert batch_out.shape == (batch_size, img_height, img_width, img_channels), \
+    "Image Dimensions do not match, {}!={}".format(batch_out.shape, (batch_size, img_height, img_width, img_channels))
 
 # Pretraining
 if not refiner_model_path:
@@ -331,8 +331,8 @@ if not refiner_model_path:
     gen_loss = np.zeros(shape=len(refiner_model.metrics_names))
 
     for i in range(pre_steps):
-        # synthetic_image_batch = get_image_batch(synthetic_generator)
-        # gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+        gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
 
         # log every `log_interval` steps
         if not i % log_interval:
@@ -351,10 +351,10 @@ if not refiner_model_path:
             print(np.mean(synthetic_image_batch))
             print(np.max(synthetic_image_batch))
 
-            # plot_batch(
-            #     np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
-            #     os.path.join(cache_dir, figure_name),
-            #     label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
+            plot_batch(
+                np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
+                os.path.join(cache_dir, figure_name),
+                label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
             real_image_batch = get_image_batch(real_generator)
             print('Real_Image_Batch')
@@ -372,7 +372,6 @@ if not refiner_model_path:
 else:
     refiner_model.load_weights(refiner_model_path)
 
-pit
 if not discriminator_model_path:
     # and D for 200 steps (one mini-batch for refined images, another for real)
     print('pre-training the discriminator network...')
@@ -452,10 +451,10 @@ for i in range(nb_steps):
         print(np.min(real_image_batch))
         print(np.mean(real_image_batch))
         print(np.max(real_image_batch))
-        plot_batch(
-            np.concatenate((synthetic_image_batch, real_image_batch)),
-            os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
-            label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
+        # plot_batch(
+        #     np.concatenate((synthetic_image_batch, real_image_batch)),
+        #     os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
+        #     label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
 
         # log loss summary
         print('Refiner model loss: {}.'.format(combined_loss / (log_interval * k_g * 2)))
