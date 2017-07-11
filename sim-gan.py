@@ -53,7 +53,7 @@ nb_steps = 10000 # originally 10000, but this makes the kernel time out
 batch_size = 49
 k_d = 1  # number of discriminator updates per step
 k_g = 2  # number of generative network updates per step
-log_interval = 100
+log_interval = 1
 pre_steps = 15 # for pretraining
 
 # Utils functions
@@ -328,8 +328,8 @@ if not refiner_model_path:
     gen_loss = np.zeros(shape=len(refiner_model.metrics_names))
 
     for i in range(pre_steps):
-        synthetic_image_batch = get_image_batch(synthetic_generator)
-        gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
+        # synthetic_image_batch = get_image_batch(synthetic_generator)
+        # gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
 
         # log every `log_interval` steps
         if not i % log_interval:
