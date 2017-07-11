@@ -173,9 +173,9 @@ def refiner_network(input_image_tensor):
     # an input image of size w x h is convolved with 3 x 3 filters that output 64 feature maps
     x = layers.Convolution2D(64, 3, 3, border_mode='same', activation='relu', weights=[np.ones([3, 3, 1, 64]), np.zeros(64)])(input_image_tensor)
 
-    # # the output is passed through 4 ResNet blocks
-    # for _ in range(4):
-    #     x = resnet_block(x)
+    # the output is passed through 4 ResNet blocks
+    for _ in range(4):
+        x = resnet_block(x)
 
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
