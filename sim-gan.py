@@ -163,15 +163,15 @@ def refiner_network(input_image_tensor):
         :param input_features: Input tensor to ResNet block.
         :return: Output tensor from ResNet block.
         """
-        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', weights=[np.ones([nb_features, 64, nb_kernel_rows, nb_kernel_cols]), np.zeros(nb_features)])(input_features)
+        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', weights=[np.ones([nb_kernel_rows, nb_kernel_cols, 64, nb_features]), np.zeros(nb_features)])(input_features)
         y = layers.Activation('relu')(y)
-        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', weights=[np.ones([nb_features, nb_features, nb_kernel_rows, nb_kernel_cols]), np.zeros(nb_features)])(y)
+        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', weights=[np.ones([nb_kernel_rows, nb_kernel_cols, nb_features, nb_features]), np.zeros(nb_features)])(y)
 
         y = layers.merge([input_features, y], mode='sum')
         return layers.Activation('relu')(y)
 
     # an input image of size w x h is convolved with 3 x 3 filters that output 64 feature maps
-    x = layers.Convolution2D(64, 3, 3, border_mode='same', activation='relu', weights=[np.ones([64, 1, 3, 3]), np.zeros(64)])(input_image_tensor)
+    x = layers.Convolution2D(64, 3, 3, border_mode='same', activation='relu', weights=[np.ones([3, 3, 1, 64]), np.zeros(64)])(input_image_tensor)
 
     # the output is passed through 4 ResNet blocks
     for _ in range(4):
@@ -179,7 +179,7 @@ def refiner_network(input_image_tensor):
 
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
-    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', weights=[np.ones([img_channels, 64, 1, 1]), np.zeros(img_channels)])(x)
+    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', weights=[np.ones([1, 1, 64, img_channels]), np.zeros(img_channels)])(x)
 
 def discriminator_network(input_image_tensor):
     """
