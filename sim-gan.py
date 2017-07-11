@@ -177,13 +177,9 @@ def refiner_network(input_image_tensor):
     for _ in range(4):
         x = resnet_block(x)
 
-    x = layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x)
-    # x = tf.subtract(x, tf.reduce_min(x, keep_dims=True))
-    # x = (tf.div(x, tf.reduce_max(x, keep_dims=True)) - 0.5) * 2.0
-
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
-    return x
+    return ((layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x))/255. - 0.5)*2.
 
 def discriminator_network(input_image_tensor):
     """
@@ -258,7 +254,7 @@ except ImportError:
 #
 
 def self_regularization_loss(y_true, y_pred):
-    delta = 0.0001  # FIXME: need to figure out an appropriate value for this
+    delta = 0.0000  # FIXME: need to figure out an appropriate value for this
     return tf.multiply(delta, tf.reduce_sum(tf.abs(y_pred - y_true)))
 
 #
