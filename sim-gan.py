@@ -163,15 +163,15 @@ def refiner_network(input_image_tensor):
         :param input_features: Input tensor to ResNet block.
         :return: Output tensor from ResNet block.
         """
-        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', init='ones')(input_features)
+        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', init='one')(input_features)
         y = layers.Activation('relu')(y)
-        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', init='ones')(y)
+        y = layers.Convolution2D(nb_features, nb_kernel_rows, nb_kernel_cols, border_mode='same', init='one')(y)
 
         y = layers.merge([input_features, y], mode='sum')
         return layers.Activation('relu')(y)
 
     # an input image of size w x h is convolved with 3 x 3 filters that output 64 feature maps
-    x = layers.Convolution2D(64, 3, 3, border_mode='same', activation='relu', init='ones')(input_image_tensor)
+    x = layers.Convolution2D(64, 3, 3, border_mode='same', activation='relu', init='one')(input_image_tensor)
 
     # the output is passed through 4 ResNet blocks
     for _ in range(4):
@@ -179,7 +179,7 @@ def refiner_network(input_image_tensor):
 
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
-    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', init='ones')(x)
+    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', init='one')(x)
 
 def discriminator_network(input_image_tensor):
     """
