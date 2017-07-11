@@ -177,9 +177,13 @@ def refiner_network(input_image_tensor):
     for _ in range(4):
         x = resnet_block(x)
 
+    x = layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x)
+    x = x - tf.reduce_min(x)
+    x = (x/tf.reduce_max(x) - 0.5)*2.0
+
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
-    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x)
+    return x
 
 def discriminator_network(input_image_tensor):
     """
