@@ -179,7 +179,7 @@ def refiner_network(input_image_tensor):
 
     x = layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x)
     x = tf.subtract(x, tf.reduce_min(x, keep_dims=True))
-    x = (tf.div(x, tf.reduce_max(x, keep_dims=True)) - 0.5) * 2.0
+    # x = (tf.div(x, tf.reduce_max(x, keep_dims=True)) - 0.5) * 2.0
 
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
