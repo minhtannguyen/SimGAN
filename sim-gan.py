@@ -348,20 +348,21 @@ if not refiner_model_path:
             print(np.mean(synthetic_image_batch))
             print(np.max(synthetic_image_batch))
 
-            plot_batch(
-                np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
-                os.path.join(cache_dir, figure_name),
-                label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
+            # plot_batch(
+            #     np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
+            #     os.path.join(cache_dir, figure_name),
+            #     label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
             real_image_batch = get_image_batch(real_generator)
             print('Real_Image_Batch')
             print(np.min(real_image_batch))
             print(np.mean(real_image_batch))
             print(np.max(real_image_batch))
-            plot_batch(
-                np.concatenate((synthetic_image_batch, real_image_batch)),
-                os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
-                label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
+
+            # plot_batch(
+            #     np.concatenate((synthetic_image_batch, real_image_batch)),
+            #     os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
+            #     label_batch=['Synthetic'] * batch_size + ['Real'] * batch_size)
 
     refiner_model.save(os.path.join(cache_dir, 'refiner_model_pre_trained.h5'))
     print('Refiner model self regularization loss: {}.'.format(gen_loss / pre_steps))
