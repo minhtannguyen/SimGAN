@@ -182,7 +182,7 @@ def refiner_network(input_image_tensor):
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
     # return x
-    return layers.Activation('tanh')(x)
+    return x
 
 def discriminator_network(input_image_tensor):
     """
