@@ -179,7 +179,7 @@ def refiner_network(input_image_tensor):
 
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
-    return ((layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x))/255. - 0.5)*2.
+    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh')(x)
 
 def discriminator_network(input_image_tensor):
     """
@@ -337,6 +337,15 @@ if not refiner_model_path:
             print('Saving batch of refined images during pre-training at step: {}.'.format(i))
 
             synthetic_image_batch = get_image_batch(synthetic_generator)
+            print('Synthetic_Image_Batch')
+            print(np.min(synthetic_image_batch))
+            print(np.mean(synthetic_image_batch))
+            print(np.max(synthetic_image_batch))
+            refined_s_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
+            print('Refined Synthetic_Image_Batch')
+            print(np.min(refined_s_image_batch))
+            print(np.mean(refined_s_image_batch))
+            print(np.max(refined_s_image_batch))
             plot_batch(
                 np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
                 os.path.join(cache_dir, figure_name),
