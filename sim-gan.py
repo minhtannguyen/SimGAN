@@ -390,7 +390,7 @@ disc_loss_refined = np.zeros(shape=len(discriminator_model.metrics_names))
 
 # see Algorithm 1 in https://arxiv.org/pdf/1612.07828v1.pdf
 for i in range(nb_steps):
-    print('Step: {} of {}.'.format(i, nb_steps))
+    # print('Step: {} of {}.'.format(i, nb_steps))
     # train the refiner
     for _ in range(k_g * 2):
         # sample a mini-batch of synthetic images
@@ -421,7 +421,7 @@ for i in range(nb_steps):
                                    disc_loss_refined)
 
     if not i % log_interval:
-        # plot batch of refined images w/ current refiner 
+        # plot batch of refined images w/ current refiner
         figure_name = 'refined_image_batch_step_{}.png'.format(i)
         print('Saving batch of refined images at adversarial step: {}.'.format(i))
 
