@@ -301,6 +301,7 @@ synthetic_generator = datagen.flow(
 
 real_generator = datagen.flow(
     X = real_image_stack,
+    seed = 1,
     **flow_params
 )
 
@@ -338,7 +339,6 @@ if not refiner_model_path:
             print('Saving batch of refined images during pre-training at step: {}.'.format(i))
 
             synthetic_image_batch = get_image_batch(synthetic_generator)
-            import ipdb; ipdb.set_trace()
             refined_s_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
             print('Refined Synthetic_Image_Batch')
             print(np.min(refined_s_image_batch))
