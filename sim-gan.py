@@ -230,6 +230,7 @@ print(refiner_model.summary())
 print(discriminator_model.summary())
 print(combined_model.summary())
 
+import ipdb; ipdb.set_trace()
 # Visualization
 from keras.utils.visualize_util import model_to_dot
 from IPython.display import SVG
