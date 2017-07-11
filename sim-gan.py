@@ -337,10 +337,6 @@ if not refiner_model_path:
             print('Saving batch of refined images during pre-training at step: {}.'.format(i))
 
             synthetic_image_batch = get_image_batch(synthetic_generator)
-            print('Synthetic_Image_Batch')
-            print(np.min(synthetic_image_batch))
-            print(np.mean(synthetic_image_batch))
-            print(np.max(synthetic_image_batch))
             refined_s_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
             print('Refined Synthetic_Image_Batch')
             print(np.min(refined_s_image_batch))
@@ -352,6 +348,10 @@ if not refiner_model_path:
                 label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
             real_image_batch = get_image_batch(real_generator)
+            print('Real_Image_Batch')
+            print(np.min(real_image_batch))
+            print(np.mean(real_image_batch))
+            print(np.max(real_image_batch))
             plot_batch(
                 np.concatenate((synthetic_image_batch, real_image_batch)),
                 os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
@@ -426,10 +426,6 @@ for i in range(nb_steps):
         print('Saving batch of refined images at adversarial step: {}.'.format(i))
 
         synthetic_image_batch = get_image_batch(synthetic_generator)
-        print('Synthetic_Image_Batch')
-        print(np.min(synthetic_image_batch))
-        print(np.mean(synthetic_image_batch))
-        print(np.max(synthetic_image_batch))
         refined_s_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
         print('Refined Synthetic_Image_Batch')
         print(np.min(refined_s_image_batch))
@@ -441,6 +437,10 @@ for i in range(nb_steps):
             label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
         real_image_batch = get_image_batch(real_generator)
+        print('Real_Image_Batch')
+        print(np.min(real_image_batch))
+        print(np.mean(real_image_batch))
+        print(np.max(real_image_batch))
         plot_batch(
             np.concatenate((synthetic_image_batch, real_image_batch)),
             os.path.join(cache_dir, 'real_image_batch_pre_train_step_{}.png'.format(i)),
