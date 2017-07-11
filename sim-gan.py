@@ -293,7 +293,6 @@ flow_from_directory_params = {'target_size': (img_height, img_width),
                               'batch_size': batch_size}
 flow_params = {'batch_size': batch_size}
 
-import ipdb; ipdb.set_trace()
 synthetic_generator = datagen.flow(
     X = syn_image_stack,
     **flow_params
