@@ -254,7 +254,7 @@ except ImportError:
 #
 
 def self_regularization_loss(y_true, y_pred):
-    delta = 0.0001  # FIXME: need to figure out an appropriate value for this
+    delta = 0.00001  # FIXME: need to figure out an appropriate value for this
     return tf.multiply(delta, tf.reduce_sum(tf.abs(y_pred - y_true)))
 
 #
