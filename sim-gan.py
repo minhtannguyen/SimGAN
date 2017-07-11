@@ -328,8 +328,8 @@ if not refiner_model_path:
     gen_loss = np.zeros(shape=len(refiner_model.metrics_names))
 
     for i in range(pre_steps):
-        synthetic_image_batch = get_image_batch(synthetic_generator)
-        gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
+        # synthetic_image_batch = get_image_batch(synthetic_generator)
+        # gen_loss = np.add(refiner_model.train_on_batch(synthetic_image_batch, synthetic_image_batch), gen_loss)
 
         # log every `log_interval` steps
         if not i % log_interval:
