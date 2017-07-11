@@ -180,7 +180,7 @@ def refiner_network(input_image_tensor):
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
     # return x
-    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation=None, weights=[np.ones([1, 1, 64, img_channels]), np.zeros(img_channels)])(x)
+    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', weights=[np.ones([1, 1, 64, img_channels]), np.zeros(img_channels)])(x)
 
 def discriminator_network(input_image_tensor):
     """
