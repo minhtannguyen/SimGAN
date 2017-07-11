@@ -173,13 +173,14 @@ def refiner_network(input_image_tensor):
     # an input image of size w x h is convolved with 3 x 3 filters that output 64 feature maps
     x = layers.Convolution2D(64, 3, 3, border_mode='same', activation='relu', weights=[np.ones([3, 3, 1, 64]), np.zeros(64)])(input_image_tensor)
 
-    # the output is passed through 4 ResNet blocks
-    for _ in range(4):
-        x = resnet_block(x)
+    # # the output is passed through 4 ResNet blocks
+    # for _ in range(4):
+    #     x = resnet_block(x)
 
     # the output of the last ResNet block is passed to a 1 x 1 convolutional layer producing 1 feature map
     # corresponding to the refined synthetic image
-    return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', weights=[np.ones([1, 1, 64, img_channels]), np.zeros(img_channels)])(x)
+    return x
+    # return layers.Convolution2D(img_channels, 1, 1, border_mode='same', activation='tanh', weights=[np.ones([1, 1, 64, img_channels]), np.zeros(img_channels)])(x)
 
 def discriminator_network(input_image_tensor):
     """
@@ -220,33 +221,32 @@ discriminator_model = models.Model(input=refined_or_real_image_tensor, output=di
 
 # combined must output the refined image along w/ the disc's classification of it for the refiner's self-reg loss
 refiner_model_output = refiner_model(synthetic_image_tensor)
-combined_output = discriminator_model(refiner_model_output)
-combined_model = models.Model(input=synthetic_image_tensor, output=[refiner_model_output, combined_output],
-                              name='combined')
-
+# combined_output = discriminator_model(refiner_model_output)
+# combined_model = models.Model(input=synthetic_image_tensor, output=[refiner_model_output, combined_output],
+#                               name='combined')
+#
 discriminator_model_output_shape = discriminator_model.output_shape
-
-print(refiner_model.summary())
-print(discriminator_model.summary())
-print(combined_model.summary())
-
-import ipdb; ipdb.set_trace()
-# Visualization
-from keras.utils.visualize_util import model_to_dot
-from IPython.display import SVG
-# Define model
-try:
-    model_to_dot(refiner_model, show_shapes=True).write_svg('refiner_model.svg')
-    SVG('refiner_model.svg')
-except ImportError:
-    print('Not running the patched version of keras/pydot!')
-    pass
-
-try:
-    model_to_dot(discriminator_model, show_shapes=True).write_svg('discriminator_model.svg')
-    SVG('discriminator_model.svg')
-except ImportError:
-    pass
+#
+# print(refiner_model.summary())
+# print(discriminator_model.summary())
+# print(combined_model.summary())
+#
+# # Visualization
+# from keras.utils.visualize_util import model_to_dot
+# from IPython.display import SVG
+# # Define model
+# try:
+#     model_to_dot(refiner_model, show_shapes=True).write_svg('refiner_model.svg')
+#     SVG('refiner_model.svg')
+# except ImportError:
+#     print('Not running the patched version of keras/pydot!')
+#     pass
+#
+# try:
+#     model_to_dot(discriminator_model, show_shapes=True).write_svg('discriminator_model.svg')
+#     SVG('discriminator_model.svg')
+# except ImportError:
+#     pass
 
 # Losses
 
@@ -278,7 +278,7 @@ sgd = optimizers.SGD(lr=1e-3)
 refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
 discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
 discriminator_model.trainable = False
-combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
+# combined_model.compile(optimizer=sgd, loss=[self_regularization_loss, local_adversarial_loss])
 
 refiner_model_path = None
 discriminator_model_path = None
