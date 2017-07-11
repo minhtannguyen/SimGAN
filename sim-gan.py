@@ -371,6 +371,7 @@ if not refiner_model_path:
 else:
     refiner_model.load_weights(refiner_model_path)
 
+pit
 if not discriminator_model_path:
     # and D for 200 steps (one mini-batch for refined images, another for real)
     print('pre-training the discriminator network...')
