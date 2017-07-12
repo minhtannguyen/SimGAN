@@ -356,10 +356,10 @@ if not refiner_model_path:
             print(np.mean(synthetic_image_batch))
             print(np.max(synthetic_image_batch))
 
-            plot_batch(
-                np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
-                os.path.join(cache_dir, figure_name),
-                label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
+            # plot_batch(
+            #     np.concatenate((synthetic_image_batch, refiner_model.predict_on_batch(synthetic_image_batch))),
+            #     os.path.join(cache_dir, figure_name),
+            #     label_batch=['Synthetic'] * batch_size + ['Refined'] * batch_size)
 
             real_image_batch = get_image_batch(real_generator)
             print('Real_Image_Batch')
