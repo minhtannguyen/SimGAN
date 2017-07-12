@@ -324,10 +324,10 @@ def get_image_batch(generator):
 # the target labels for the cross-entropy loss layer are 0 for every yj (real) and 1 for every xi (refined)
 y_real = np.array([[[1.0, 0.0]] * discriminator_model_output_shape[1]] * batch_size)
 y_refined = np.array([[[0.0, 1.0]] * discriminator_model_output_shape[1]] * batch_size)
-assert y_real.shape == (batch_size, discriminator_model_output_shape[1], 2)
-batch_out = get_image_batch(synthetic_generator)
-assert batch_out.shape == (batch_size, img_height, img_width, img_channels), \
-    "Image Dimensions do not match, {}!={}".format(batch_out.shape, (batch_size, img_height, img_width, img_channels))
+# assert y_real.shape == (batch_size, discriminator_model_output_shape[1], 2)
+# batch_out = get_image_batch(synthetic_generator)
+# assert batch_out.shape == (batch_size, img_height, img_width, img_channels), \
+#     "Image Dimensions do not match, {}!={}".format(batch_out.shape, (batch_size, img_height, img_width, img_channels))
 
 # Pretraining
 if not refiner_model_path:
