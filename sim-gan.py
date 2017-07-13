@@ -191,7 +191,7 @@ def discriminator_network(input_image_tensor):
     """
     x = layers.Convolution2D(96, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
                              weights=[1e-3*np.ones([3, 3, img_channels, 96]), np.zeros(96)])(input_image_tensor)
-    x = layers.Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2), activation=None,
+    x = layers.Convolution2D(64, 3, 3, border_mode='same', subsample=2, activation=None,
                              weights=[1e-3*np.ones([3, 3, 96, 64]), np.zeros(64)])(x)
     # x = layers.MaxPooling2D(pool_size=(3, 3), border_mode='same', strides=(1, 1))(x)
     # x = layers.Convolution2D(32, 3, 3, border_mode='same', subsample=(1, 1), activation='relu',
