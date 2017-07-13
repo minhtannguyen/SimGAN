@@ -191,19 +191,20 @@ def discriminator_network(input_image_tensor):
     """
     x = layers.Convolution2D(96, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
                              weights=[1e-2*np.ones([3, 3, img_channels, 96]), np.zeros(96)])(input_image_tensor)
-    x = layers.Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
-                             weights=[1e-2*np.ones([3, 3, 96, 64]), np.zeros(64)])(x)
-    x = layers.MaxPooling2D(pool_size=(3, 3), border_mode='same', strides=(1, 1))(x)
-    x = layers.Convolution2D(32, 3, 3, border_mode='same', subsample=(1, 1), activation='relu',
-                             weights=[1e-2*np.ones([3, 3, 64, 32]), np.zeros(32)])(x)
-    x = layers.Convolution2D(32, 1, 1, border_mode='same', subsample=(1, 1), activation='relu',
-                             weights=[1e-2*np.ones([1, 1, 32, 32]), np.zeros(32)])(x)
-    x = layers.Convolution2D(2, 1, 1, border_mode='same', subsample=(1, 1), activation='relu',
-                             weights=[1e-2 * np.ones([1, 1, 32, 2]), np.zeros(2)])(x)
+    # x = layers.Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
+    #                          weights=[1e-2*np.ones([3, 3, 96, 64]), np.zeros(64)])(x)
+    # x = layers.MaxPooling2D(pool_size=(3, 3), border_mode='same', strides=(1, 1))(x)
+    # x = layers.Convolution2D(32, 3, 3, border_mode='same', subsample=(1, 1), activation='relu',
+    #                          weights=[1e-2*np.ones([3, 3, 64, 32]), np.zeros(32)])(x)
+    # x = layers.Convolution2D(32, 1, 1, border_mode='same', subsample=(1, 1), activation='relu',
+    #                          weights=[1e-2*np.ones([1, 1, 32, 32]), np.zeros(32)])(x)
+    # x = layers.Convolution2D(2, 1, 1, border_mode='same', subsample=(1, 1), activation='relu',
+    #                          weights=[1e-2 * np.ones([1, 1, 32, 2]), np.zeros(2)])(x)
 
     # here one feature map corresponds to `is_real` and the other to `is_refined`,
     # and the custom loss function is then `tf.nn.sparse_softmax_cross_entropy_with_logits`
-    return layers.Reshape((-1, 2))(x)
+    # return layers.Reshape((-1, 2))(x)
+    return x
 
 # Combining models
 #
@@ -385,14 +386,14 @@ if not discriminator_model_path:
     for _ in range(pre_steps):
         real_image_batch = get_image_batch(real_generator)
         doutr = discriminator_model.predict_on_batch(real_image_batch)
-        dlnewr = discriminator_model.train_on_batch(real_image_batch, y_real)
-        disc_loss = np.add(dlnewr, disc_loss)
-
-        synthetic_image_batch = get_image_batch(synthetic_generator)
-        refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
-        douts = discriminator_model.predict_on_batch(refined_image_batch)
-        dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
-        disc_loss = np.add(dlnews, disc_loss)
+        # dlnewr = discriminator_model.train_on_batch(real_image_batch, y_real)
+        # disc_loss = np.add(dlnewr, disc_loss)
+        #
+        # synthetic_image_batch = get_image_batch(synthetic_generator)
+        # refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
+        # douts = discriminator_model.predict_on_batch(refined_image_batch)
+        # dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
+        # disc_loss = np.add(dlnews, disc_loss)
         import ipdb; ipdb.set_trace()
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
