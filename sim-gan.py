@@ -396,8 +396,8 @@ if not discriminator_model_path:
         # disc_loss = np.add(dlnews, disc_loss)
         print('Dout:')
         print(doutr[:,:,:,0])
-        print('Mean Dout = (%d, %d, %d, %d)' % np.mean(doutr))
-        print('Shape Dout = %f' % np.shape(doutr))
+        print('Shape Dout = (%d, %d, %d, %d)' % np.shape(doutr))
+        print('Mean Dout = %f' % np.mean(doutr))
         import ipdb; ipdb.set_trace()
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
