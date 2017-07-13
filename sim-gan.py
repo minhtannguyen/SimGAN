@@ -191,8 +191,8 @@ def discriminator_network(input_image_tensor):
     """
     x = layers.Convolution2D(96, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
                              weights=[1e-2*np.ones([3, 3, img_channels, 96]), np.zeros(96)])(input_image_tensor)
-    # x = layers.Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
-    #                          weights=[1e-2*np.ones([3, 3, 96, 64]), np.zeros(64)])(x)
+    x = layers.Convolution2D(64, 3, 3, border_mode='same', subsample=(2, 2), activation='relu',
+                             weights=[1e-2*np.ones([3, 3, 96, 64]), np.zeros(64)])(x)
     # x = layers.MaxPooling2D(pool_size=(3, 3), border_mode='same', strides=(1, 1))(x)
     # x = layers.Convolution2D(32, 3, 3, border_mode='same', subsample=(1, 1), activation='relu',
     #                          weights=[1e-2*np.ones([3, 3, 64, 32]), np.zeros(32)])(x)
@@ -394,6 +394,9 @@ if not discriminator_model_path:
         # douts = discriminator_model.predict_on_batch(refined_image_batch)
         # dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         # disc_loss = np.add(dlnews, disc_loss)
+        print('Mean Dout = %f' % np.mean(doutr))
+        print('Dout:')
+        print(doutr)
         import ipdb; ipdb.set_trace()
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
