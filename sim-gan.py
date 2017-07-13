@@ -398,6 +398,9 @@ if not discriminator_model_path:
         print(doutr[:,:,:,0])
         print('Shape Dout = (%d, %d, %d, %d)' % np.shape(doutr))
         print('Mean Dout = %f' % np.mean(doutr))
+        print('Min Dout = %f' % np.min(doutr))
+        print('Max Dout = %f' % np.max(doutr))
+        print('Std Dout = %f' % np.std(doutr))
         import ipdb; ipdb.set_trace()
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
