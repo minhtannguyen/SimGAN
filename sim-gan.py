@@ -395,7 +395,7 @@ if not discriminator_model_path:
         # dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         # disc_loss = np.add(dlnews, disc_loss)
         print('Dout:')
-        print(doutr[0,:,:,0])
+        print(doutr[0])
         print('Shape Dout = (%d, %d, %d, %d)' % np.shape(doutr))
         print('Mean Dout = %f' % np.mean(doutr))
         print('Min Dout = %f' % np.min(doutr))
