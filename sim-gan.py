@@ -269,7 +269,7 @@ def self_regularization_loss(y_true, y_pred):
 # the adversarial loss function is the sum of the cross-entropy losses over the local patches
 #
 
-def local_adversarial_loss(y_true, y_pred):
+def local_adversarial_loss(y_pred, y_true):
     # y_true and y_pred have shape (batch_size, # of local patches, 2), but really we just want to average over
     # the local patches and batch size so we can reshape to (batch_size * # of local patches, 2)
     y_true = tf.reshape(y_true, (-1, 2))
