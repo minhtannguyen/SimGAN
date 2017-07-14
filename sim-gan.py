@@ -323,8 +323,8 @@ def get_image_batch(generator):
     return img_batch
 
 # the target labels for the cross-entropy loss layer are 0 for every yj (real) and 1 for every xi (refined)
-y_real = np.array([[[1.0,]] * discriminator_model_output_shape[1]] * batch_size)
-y_refined = np.array([[[0.0,]] * discriminator_model_output_shape[1]] * batch_size)
+y_real = np.array([[[1.0, 0.0]] * discriminator_model_output_shape[1]] * batch_size)
+y_refined = np.array([[[0.0, 1.0]] * discriminator_model_output_shape[1]] * batch_size)
 # assert y_real.shape == (batch_size, discriminator_model_output_shape[1], 2)
 # batch_out = get_image_batch(synthetic_generator)
 # assert batch_out.shape == (batch_size, img_height, img_width, img_channels), \
@@ -393,7 +393,7 @@ if not discriminator_model_path:
         synthetic_image_batch = get_image_batch(synthetic_generator)
         refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
         douts = discriminator_model.predict_on_batch(refined_image_batch)
-        dlnews = discriminator_model.test_on_batch(refined_image_batch, y_refined)
+        dlnews = discriminator_model.test_on_batch(0.*refined_image_batch, y_refined)
         _ = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         disc_loss = np.add(dlnews, disc_loss)
 
