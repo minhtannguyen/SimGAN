@@ -410,8 +410,8 @@ if not discriminator_model_path:
 
             print('Real discriminator model loss: {}.'.format(dlnewr))
             print('Synthetic discriminator model loss: {}.'.format(dlnews))
-            print(np.shape(real_image_batch))
-            print(np.shape(synthetic_image_batch))
+            print(np.mean(refined_image_batch))
+            print(np.shape(refined_image_batch))
             print(np.shape(y_real))
             print(np.shape(y_refined))
 
