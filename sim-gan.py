@@ -395,13 +395,16 @@ if not discriminator_model_path:
         dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         disc_loss = np.add(dlnews, disc_loss)
 
-        print('Dout:')
-        print(doutr[-1].T)
-        print('Shape Dout = (%d, %d, %d)' % np.shape(doutr))
-        print('Mean Dout = %f' % np.mean(doutr))
-        print('Min Dout = %f' % np.min(doutr))
-        print('Max Dout = %f' % np.max(doutr))
-        print('Std Dout = %f' % np.std(doutr))
+        if i % 10 == 0:
+            print('Mean Dout = %f at iter %d' % (np.mean(doutr), i))
+            print('Min Dout = %f at iter %d' % (np.min(doutr), i))
+            print('Max Dout = %f at iter %d' % (np.max(doutr), i))
+            print('Std Dout = %f at iter %d' % (np.std(doutr), i))
+
+            print('Mean Dsyn = %f at iter %d' % (np.mean(douts), i))
+            print('Min Dsyn = %f at iter %d' % (np.min(douts), i))
+            print('Max Dsyn = %f at iter %d' % (np.max(douts), i))
+            print('Std Dsyn = %f at iter %d' % (np.std(douts), i))
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
     print('Discriminator model loss: {}.'.format(disc_loss / (pre_steps * 2)))
