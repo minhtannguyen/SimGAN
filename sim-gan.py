@@ -386,14 +386,15 @@ if not discriminator_model_path:
     for _ in range(pre_steps):
         real_image_batch = get_image_batch(real_generator)
         doutr = discriminator_model.predict_on_batch(real_image_batch)
-        # dlnewr = discriminator_model.train_on_batch(real_image_batch, y_real)
-        # disc_loss = np.add(dlnewr, disc_loss)
-        #
-        # synthetic_image_batch = get_image_batch(synthetic_generator)
-        # refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
-        # douts = discriminator_model.predict_on_batch(refined_image_batch)
-        # dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
-        # disc_loss = np.add(dlnews, disc_loss)
+        dlnewr = discriminator_model.train_on_batch(real_image_batch, y_real)
+        disc_loss = np.add(dlnewr, disc_loss)
+
+        synthetic_image_batch = get_image_batch(synthetic_generator)
+        refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
+        douts = discriminator_model.predict_on_batch(refined_image_batch)
+        dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
+        disc_loss = np.add(dlnews, disc_loss)
+
         print('Dout:')
         print(doutr[-1].T)
         print('Shape Dout = (%d, %d, %d)' % np.shape(doutr))
@@ -401,12 +402,13 @@ if not discriminator_model_path:
         print('Min Dout = %f' % np.min(doutr))
         print('Max Dout = %f' % np.max(doutr))
         print('Std Dout = %f' % np.std(doutr))
-        import ipdb; ipdb.set_trace()
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
     print('Discriminator model loss: {}.'.format(disc_loss / (pre_steps * 2)))
 else:
     discriminator_model.load_weights(discriminator_model_path)
+
+import ipdb; ipdb.set_trace()
 
 # Full training
 # TODO: what is an appropriate size for the image history buffer?
