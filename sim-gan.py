@@ -279,7 +279,7 @@ def local_adversarial_loss(y_true, y_pred):
     return tf.reduce_mean(loss)
 
 # Compile the model
-sgd = optimizers.SGD(lr=1e-3)
+sgd = optimizers.SGD(lr=0.0)
 
 refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
 discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
