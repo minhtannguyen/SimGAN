@@ -386,7 +386,7 @@ if not discriminator_model_path:
     for i in range(pre_steps):
         real_image_batch = get_image_batch(real_generator)
         doutr = discriminator_model.predict_on_batch(real_image_batch)
-        dlnewr = discriminator_model.test_on_batch(real_image_batch, y_real)
+        dlnewr = discriminator_model.test_on_batch(doutr, y_real)
         _ = discriminator_model.train_on_batch(real_image_batch, y_real)
         disc_loss = np.add(dlnewr, disc_loss)
 
