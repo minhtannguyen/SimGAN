@@ -279,7 +279,7 @@ def local_adversarial_loss(y_true, y_pred):
     return tf.reduce_mean(loss)
 
 # Compile the model
-sgd = optimizers.SGD(lr=0.0)
+sgd = optimizers.SGD(lr=1e-3)
 
 refiner_model.compile(optimizer=sgd, loss=self_regularization_loss)
 discriminator_model.compile(optimizer=sgd, loss=local_adversarial_loss)
@@ -393,7 +393,7 @@ if not discriminator_model_path:
         synthetic_image_batch = get_image_batch(synthetic_generator)
         refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
         douts = discriminator_model.predict_on_batch(refined_image_batch)
-        dlnews = discriminator_model.test_on_batch(0.*refined_image_batch, y_refined)
+        dlnews = discriminator_model.test_on_batch(refined_image_batch, y_refined)
         _ = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         disc_loss = np.add(dlnews, disc_loss)
 
