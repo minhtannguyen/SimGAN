@@ -383,7 +383,7 @@ if not discriminator_model_path:
     print('pre-training the discriminator network...')
     disc_loss = np.zeros(shape=len(discriminator_model.metrics_names))
 
-    for _ in range(pre_steps):
+    for i in range(pre_steps):
         real_image_batch = get_image_batch(real_generator)
         doutr = discriminator_model.predict_on_batch(real_image_batch)
         dlnewr = discriminator_model.train_on_batch(real_image_batch, y_real)
@@ -395,7 +395,7 @@ if not discriminator_model_path:
         dlnews = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         disc_loss = np.add(dlnews, disc_loss)
 
-        if i % 10 == 0:
+        if i % 7 == 0:
             print('Mean Dout = %f at iter %d' % (np.mean(doutr), i))
             print('Min Dout = %f at iter %d' % (np.min(doutr), i))
             print('Max Dout = %f at iter %d' % (np.max(doutr), i))
