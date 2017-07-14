@@ -387,14 +387,14 @@ if not discriminator_model_path:
         real_image_batch = get_image_batch(real_generator)
         doutr = discriminator_model.predict_on_batch(real_image_batch)
         dlnewr = discriminator_model.test_on_batch(real_image_batch, y_real)
-        _ = discriminator_model.train_on_batch(real_image_batch, y_real)
+        # _ = discriminator_model.train_on_batch(real_image_batch, y_real)
         disc_loss = np.add(dlnewr, disc_loss)
 
         synthetic_image_batch = get_image_batch(synthetic_generator)
         refined_image_batch = refiner_model.predict_on_batch(synthetic_image_batch)
         douts = discriminator_model.predict_on_batch(refined_image_batch)
         dlnews = discriminator_model.test_on_batch(refined_image_batch, y_refined)
-        _ = discriminator_model.train_on_batch(refined_image_batch, y_refined)
+        # _ = discriminator_model.train_on_batch(refined_image_batch, y_refined)
         disc_loss = np.add(dlnews, disc_loss)
 
         if i % 7 == 0:
