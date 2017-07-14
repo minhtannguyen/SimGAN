@@ -396,7 +396,7 @@ if not discriminator_model_path:
         # disc_loss = np.add(dlnews, disc_loss)
         print('Dout:')
         print(doutr[0])
-        print('Shape Dout = (%d, %d, %d, %d)' % np.shape(doutr))
+        print('Shape Dout = (%d, %d, %d)' % np.shape(doutr))
         print('Mean Dout = %f' % np.mean(doutr))
         print('Min Dout = %f' % np.min(doutr))
         print('Max Dout = %f' % np.max(doutr))
