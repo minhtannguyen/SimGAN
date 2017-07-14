@@ -386,7 +386,7 @@ if not discriminator_model_path:
     for i in range(pre_steps):
         real_image_batch = get_image_batch(real_generator)
         doutr = discriminator_model.predict_on_batch(real_image_batch)
-        dlnewr = discriminator_model.test_on_batch(doutr, y_real)
+        dlnewr = discriminator_model.test_on_batch(real_image_batch, y_real)
         _ = discriminator_model.train_on_batch(real_image_batch, y_real)
         disc_loss = np.add(dlnewr, disc_loss)
 
@@ -410,6 +410,10 @@ if not discriminator_model_path:
 
             print('Real discriminator model loss: {}.'.format(dlnewr))
             print('Synthetic discriminator model loss: {}.'.format(dlnews))
+            print(np.shape(real_image_batch))
+            print(np.shape(synthetic_image_batch))
+            print(np.shape(y_real))
+            print(np.shape(y_refined))
 
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
     print('Discriminator model loss: {}.'.format(disc_loss / (pre_steps * 2)))
