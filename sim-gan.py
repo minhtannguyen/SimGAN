@@ -274,6 +274,7 @@ def local_adversarial_loss(y_true, y_pred):
     # the local patches and batch size so we can reshape to (batch_size * # of local patches, 2)
     y_true = tf.reshape(y_true, (-1, 2))
     y_pred = tf.reshape(y_pred, (-1, 2))
+    import ipdb; ipdb.set_trace()
     loss = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
 
     return tf.reduce_mean(loss)
