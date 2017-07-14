@@ -406,6 +406,9 @@ if not discriminator_model_path:
             print('Max Dsyn = %f at iter %d' % (np.max(douts), i))
             print('Std Dsyn = %f at iter %d' % (np.std(douts), i))
 
+            print('Real discriminator model loss: {}.'.format(dlnewr))
+            print('Synthetic discriminator model loss: {}.'.format(dlnews))
+
     discriminator_model.save(os.path.join(cache_dir, 'discriminator_model_pre_trained.h5'))
     print('Discriminator model loss: {}.'.format(disc_loss / (pre_steps * 2)))
 else:
